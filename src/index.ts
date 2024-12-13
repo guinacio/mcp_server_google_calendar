@@ -4,7 +4,7 @@ import { authorize } from "./auth/auth.js";
 import { google } from "googleapis";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { EventSchema, ListEventsResponse } from "./schemas.js";
+import { EventSchema } from "./schemas.js";
 
 const server = new Server({
   name: "mcp_server_google_calendar",
@@ -64,14 +64,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         maxResults,
       });
 
-      const response: ListEventsResponse = {
-        _meta: {},
-        events: res.data.items,
-        nextPageToken: res.data.nextPageToken || "",
-        nextSyncToken: res.data.nextSyncToken || "",
-      };
-
-      return response;
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(res.data)
+          }
+        ]
+      }
     }
 
     throw new Error(`Unknown tool: ${toolName}`);
