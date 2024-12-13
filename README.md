@@ -26,7 +26,7 @@ npm run build
     "google_calendar": {
       "command": "node",
         "args": [
-            "/Users/eliasuran/repos/mcp_server_google_calendar/build/index.js"
+            "/ABSOLUTE/PATH/TO/mcp_server_google_calendar/build/index.js"
         ]
     }
   }
