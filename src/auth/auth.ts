@@ -1,32 +1,19 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import process from 'process';
 import { authenticate } from '@google-cloud/local-auth';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { SCOPES } from './scopes.js';
+import { Credentials, CredentialsFile } from './schemas.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// If modifying these scopes, delete token.json.
-const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-interface Credentials {
-  type: string;
-  client_id: string;
-  client_secret: string;
-  refresh_token: string;
-}
-
-interface CredentialsFile {
-  installed?: {
-    client_id: string;
-    client_secret: string;
-  };
-  web?: {
-    client_id: string;
-    client_secret: string;
-  };
-}
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
+const TOKEN_PATH = path.resolve(PROJECT_ROOT, 'token.json');
+const CREDENTIALS_PATH = path.resolve(PROJECT_ROOT, 'credentials.json');
 
 async function loadSavedCredentialsIfExist(): Promise<OAuth2Client | null> {
   try {

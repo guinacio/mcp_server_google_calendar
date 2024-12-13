@@ -5,7 +5,6 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { authorize } from "./auth/auth.js";
 
 const NWS_API_BASE = "https://api.weather.gov";
 const USER_AGENT = "weather-app/1.0";
@@ -289,7 +288,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start the server
 async function main() {
-  const client = await authorize();
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Google calendar mcp running");
