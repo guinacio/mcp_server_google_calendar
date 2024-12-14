@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { authorize } from './auth/auth.js';
@@ -8,7 +10,29 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CreateEventSchema, ListEventsSchema } from './schemas.js';
-import { tools } from './tool-schema.js';
+import { init, parseArgs } from './init.js';
+import { coolLog, logs } from './utils/logs.js';
+import { GOOGLE_CALENDAR_TOOLS } from './tools/tools.js';
+
+// ----------
+// init start
+
+const commands = ['init', 'run'] as const;
+const { executablePath, command } = parseArgs()
+if (!commands.includes(command as(typeof commands)[number])) {
+  console.error(`Invalid command: ${command}`);
+  console.error(`Valid commands: ${commands.join(', ')}`);
+  process.exit(1);
+}
+
+if (command === 'init') {
+  coolLog(logs.init)
+  init(executablePath)
+  process.exit(0)
+}
+
+// init end
+// --------
 
 const server = new Server(
   {
@@ -23,7 +47,7 @@ const server = new Server(
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return { tools };
+  return { tools: GOOGLE_CALENDAR_TOOLS };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {

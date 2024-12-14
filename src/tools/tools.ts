@@ -1,6 +1,6 @@
 const EMAIL_DOMAIN = '@comono.no';
 
-export const tools = [
+export const GOOGLE_CALENDAR_TOOLS = [
   {
     name: 'get-events',
     description: 'Get events from calendar',
