@@ -29,7 +29,7 @@ async function saveCredentials(client: OAuth2Client): Promise<void> {
   const content = await fs.readFile(CREDENTIALS_PATH, 'utf-8');
   const keys: CredentialsFile = JSON.parse(content);
   const key = keys.installed || keys.web;
-  
+
   if (!key) {
     throw new Error('No valid credentials found');
   }
@@ -40,7 +40,7 @@ async function saveCredentials(client: OAuth2Client): Promise<void> {
     client_secret: key.client_secret,
     refresh_token: client.credentials.refresh_token || '',
   };
-  
+
   await fs.writeFile(TOKEN_PATH, JSON.stringify(payload));
 }
 

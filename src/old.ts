@@ -1,13 +1,13 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
+} from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 
-const NWS_API_BASE = "https://api.weather.gov";
-const USER_AGENT = "weather-app/1.0";
+const NWS_API_BASE = 'https://api.weather.gov';
+const USER_AGENT = 'weather-app/1.0';
 
 // Define Zod schemas for validation
 const AlertsArgumentsSchema = z.object({
@@ -22,14 +22,14 @@ const ForecastArgumentsSchema = z.object({
 // Create server instance
 const server = new Server(
   {
-    name: "weather",
-    version: "1.0.0",
+    name: 'weather',
+    version: '1.0.0',
   },
   {
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // List available tools
@@ -37,35 +37,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "get-alerts",
-        description: "Get weather alerts for a state",
+        name: 'get-alerts',
+        description: 'Get weather alerts for a state',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             state: {
-              type: "string",
-              description: "Two-letter state code (e.g. CA, NY)",
+              type: 'string',
+              description: 'Two-letter state code (e.g. CA, NY)',
             },
           },
-          required: ["state"],
+          required: ['state'],
         },
       },
       {
-        name: "get-forecast",
-        description: "Get weather forecast for a location",
+        name: 'get-forecast',
+        description: 'Get weather forecast for a location',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             latitude: {
-              type: "number",
-              description: "Latitude of the location",
+              type: 'number',
+              description: 'Latitude of the location',
             },
             longitude: {
-              type: "number",
-              description: "Longitude of the location",
+              type: 'number',
+              description: 'Longitude of the location',
             },
           },
-          required: ["latitude", "longitude"],
+          required: ['latitude', 'longitude'],
         },
       },
     ],
@@ -75,8 +75,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Helper function for making NWS API requests
 async function makeNWSRequest<T>(url: string): Promise<T | null> {
   const headers = {
-    "User-Agent": USER_AGENT,
-    Accept: "application/geo+json",
+    'User-Agent': USER_AGENT,
+    Accept: 'application/geo+json',
   };
 
   try {
@@ -86,7 +86,7 @@ async function makeNWSRequest<T>(url: string): Promise<T | null> {
     }
     return (await response.json()) as T;
   } catch (error) {
-    console.error("Error making NWS request:", error);
+    console.error('Error making NWS request:', error);
     return null;
   }
 }
@@ -105,13 +105,13 @@ interface AlertFeature {
 function formatAlert(feature: AlertFeature): string {
   const props = feature.properties;
   return [
-    `Event: ${props.event || "Unknown"}`,
-    `Area: ${props.areaDesc || "Unknown"}`,
-    `Severity: ${props.severity || "Unknown"}`,
-    `Status: ${props.status || "Unknown"}`,
-    `Headline: ${props.headline || "No headline"}`,
-    "---",
-  ].join("\n");
+    `Event: ${props.event || 'Unknown'}`,
+    `Area: ${props.areaDesc || 'Unknown'}`,
+    `Severity: ${props.severity || 'Unknown'}`,
+    `Status: ${props.status || 'Unknown'}`,
+    `Headline: ${props.headline || 'No headline'}`,
+    '---',
+  ].join('\n');
 }
 
 interface ForecastPeriod {
@@ -144,7 +144,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    if (name === "get-alerts") {
+    if (name === 'get-alerts') {
       const { state } = AlertsArgumentsSchema.parse(args);
       const stateCode = state.toUpperCase();
 
@@ -155,8 +155,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
-              text: "Failed to retrieve alerts data",
+              type: 'text',
+              text: 'Failed to retrieve alerts data',
             },
           ],
         };
@@ -167,32 +167,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `No active alerts for ${stateCode}`,
             },
           ],
         };
       }
 
-      const formattedAlerts = features.map(formatAlert).slice(0, 20) // only take the first 20 alerts;
+      const formattedAlerts = features.map(formatAlert).slice(0, 20); // only take the first 20 alerts;
       const alertsText = `Active alerts for ${stateCode}:\n\n${formattedAlerts.join(
-        "\n"
+        '\n',
       )}`;
 
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: alertsText,
           },
         ],
       };
-    } else if (name === "get-forecast") {
+    } else if (name === 'get-forecast') {
       const { latitude, longitude } = ForecastArgumentsSchema.parse(args);
 
       // Get grid point data
       const pointsUrl = `${NWS_API_BASE}/points/${latitude.toFixed(
-        4
+        4,
       )},${longitude.toFixed(4)}`;
       const pointsData = await makeNWSRequest<PointsResponse>(pointsUrl);
 
@@ -200,7 +200,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Failed to retrieve grid point data for coordinates: ${latitude}, ${longitude}. This location may not be supported by the NWS API (only US locations are supported).`,
             },
           ],
@@ -212,8 +212,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
-              text: "Failed to get forecast URL from grid point data",
+              type: 'text',
+              text: 'Failed to get forecast URL from grid point data',
             },
           ],
         };
@@ -225,8 +225,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
-              text: "Failed to retrieve forecast data",
+              type: 'text',
+              text: 'Failed to retrieve forecast data',
             },
           ],
         };
@@ -237,8 +237,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: "text",
-              text: "No forecast periods available",
+              type: 'text',
+              text: 'No forecast periods available',
             },
           ],
         };
@@ -247,26 +247,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Format forecast periods
       const formattedForecast = periods.map((period: ForecastPeriod) =>
         [
-          `${period.name || "Unknown"}:`,
-          `Temperature: ${period.temperature || "Unknown"}°${
-            period.temperatureUnit || "F"
+          `${period.name || 'Unknown'}:`,
+          `Temperature: ${period.temperature || 'Unknown'}°${
+            period.temperatureUnit || 'F'
           }`,
-          `Wind: ${period.windSpeed || "Unknown"} ${
-            period.windDirection || ""
+          `Wind: ${period.windSpeed || 'Unknown'} ${
+            period.windDirection || ''
           }`,
-          `${period.shortForecast || "No forecast available"}`,
-          "---",
-        ].join("\n")
+          `${period.shortForecast || 'No forecast available'}`,
+          '---',
+        ].join('\n'),
       );
 
       const forecastText = `Forecast for ${latitude}, ${longitude}:\n\n${formattedForecast.join(
-        "\n"
+        '\n',
       )}`;
 
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: forecastText,
           },
         ],
@@ -278,8 +278,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (error instanceof z.ZodError) {
       throw new Error(
         `Invalid arguments: ${error.errors
-          .map((e) => `${e.path.join(".")}: ${e.message}`)
-          .join(", ")}`
+          .map((e) => `${e.path.join('.')}: ${e.message}`)
+          .join(', ')}`,
       );
     }
     throw error;
@@ -290,10 +290,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Google calendar mcp running");
+  console.error('Google calendar mcp running');
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error('Fatal error in main():', error);
   process.exit(1);
 });

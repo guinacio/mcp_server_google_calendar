@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const CredentialsSchema = z.object({
   type: z.string(),
@@ -10,7 +10,7 @@ export const CredentialsSchema = z.object({
 export const CredentialsFileSchema = z.object({
   installed: CredentialsSchema.optional(),
   web: CredentialsSchema.optional(),
-})
+});
 
 export type Credentials = z.infer<typeof CredentialsSchema>;
 export type CredentialsFile = z.infer<typeof CredentialsFileSchema>;

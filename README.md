@@ -9,11 +9,13 @@
 3.5. Create credentials.json file and add to root of project
 
 4. Install dependencies
+
 ```bash
 npm install
 ```
 
 5. Build project
+
 ```bash
 npm run build
 ```
@@ -25,9 +27,7 @@ npm run build
   "mcpServers": {
     "google_calendar": {
       "command": "node",
-        "args": [
-            "/ABSOLUTE/PATH/TO/mcp_server_google_calendar/build/index.js"
-        ]
+      "args": ["/ABSOLUTE/PATH/TO/mcp_server_google_calendar/build/index.js"]
     }
   }
 }
