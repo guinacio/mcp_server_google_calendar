@@ -4,7 +4,8 @@ import { authorize } from "./auth/auth.js";
 import { google } from "googleapis";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { EventSchema } from "./schemas.js";
+import { CreateEventSchema, ListEventsSchema } from "./schemas.js";
+import { tools } from "./tool-schema.js";
 
 const server = new Server({
   name: "mcp_server_google_calendar",
@@ -16,36 +17,7 @@ const server = new Server({
 });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "get-events",
-        description: "Get events from calendar",
-        inputSchema: {
-          type: "object",
-          properties: {
-            calendarId: {
-              type: "string",
-              description: "The ID of the calendar to get events from",
-            },
-            timeMin: {
-              type: "string",
-              description: "The minimum time to get events from",
-            },
-            timeMax: {
-              type: "string",
-              description: "The maximum time to get events from",
-            },
-            maxResults: {
-              type: "number",
-              description: "The maximum number of events to return",
-            },
-          },
-          required: ["calendarId"],
-        },
-      },
-    ]
-  }
+  return { tools }
 })
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -55,7 +27,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     if (toolName === "get-events") {
 
-      const { calendarId, timeMin, timeMax, maxResults } = EventSchema.parse(args);
+      const { calendarId, timeMin, timeMax, maxResults } = ListEventsSchema.parse(args);
       
       const res = await calendar.events.list({
         calendarId,
@@ -64,6 +36,45 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         maxResults,
       });
 
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(res.data)
+          }
+        ]
+      }
+    } else if (toolName === "list-calendars") {
+      const res = await calendar.calendarList.list();
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(res.data)
+          }
+        ]
+      }
+    } else if (toolName === "check-availability") {
+      const res = await calendar.freebusy.query({
+        requestBody: args
+      });
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(res.data)
+          }
+        ]
+      }
+    } else if (toolName === "create-event") {
+      // TODO: give access to drive to add attachments
+      const { calendarId, event } = CreateEventSchema.parse(args);
+      const res = await calendar.events.insert({
+        calendarId,
+        requestBody: event,
+        conferenceDataVersion: event.conferenceData ? 1 : 0,
+        supportsAttachments: event.attachments ? true : false,
+      });
       return {
         content: [
           {
