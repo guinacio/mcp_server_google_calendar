@@ -17,7 +17,7 @@ const claudeConfigPath = path.join(
 export function parseArgs() {
   const args = process.argv
   if (args.length !== 3) {
-    console.error('Usage: npx *TODO: addcommandhere* init')
+    console.error('Usage: npx mcp-server-google-calendar@latest init')
     process.exit(1)
   }
   return {

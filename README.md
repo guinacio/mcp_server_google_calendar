@@ -1,36 +1,20 @@
-## HOW TO SET UP
+# Google Calendar MCP Server
 
-1. Clone repo
+mcp is very cool yes
 
-2. Navigate to project
+Examples of things to ask Claude:
+- `Create an event called "Chill" whenever I have time on Monday after 8pm.`
+- `Check whenever both me and Arian are free this week between 9am and 5pm and shecule a meeting called "Going over MCP"`
 
-3. (currently not possible to use this google project, as it is not public) Create a new project in Google Cloud Platform and get credentials
+## Usage
 
-3.5. Create credentials.json file and add to root of project
+### Requirements
 
-4. Install dependencies
+- Node.js >= v18.0.0
+- Claude Desktop
 
-```bash
-npm install
-```
+### Installation
 
-5. Build project
-
-```bash
-npm run build
-```
-
-6. Add this to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "google_calendar": {
-      "command": "node",
-      "args": ["/ABSOLUTE/PATH/TO/mcp_server_google_calendar/build/index.js"]
-    }
-  }
-}
-```
-
-7. Open Claude Desktop and start talking to your Google Calendar!
+1. Run `npx mcp-server-google-calendar init`
+2. Restart Claude Desktop
+3. You can now try with a simple command like `Give me a list of all my events this week`

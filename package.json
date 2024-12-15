@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-google-calendar",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "unofficial MCP Server Google Calendar",
   "license": "MIT",
   "author": "eliasuran",
@@ -32,6 +32,6 @@
     "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=23.3.0"
+    "node": ">=18.0.0"
   }
 }
